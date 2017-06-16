@@ -1,7 +1,7 @@
 Training session and manual minibatch loop
 
 This tutorial demonstrates different aspects of the training session and discusses scenarios that benefit from it the most.
-Note: Please consider using Function.train method instead of directly using the training session API.
+Note: Please consider using Function.train method instead of directly using the training session API. For more information please see ... tutorial
 
 Typical CNTK script with manual loop
 
@@ -50,10 +50,13 @@ Instead of the manual loops above the script would look like follows:
        test_config = TestConfig(test_mb_source, mb_size=32)
    ).train()
 
+Plus to the higher abstraction the training session is also implemented in C++, so it is generally faster than writing a loop manually in Python. 
 
-Training session is implemented in the C++ code, in order to report the progress, it uses Trainer summarize_training_progress after each progress_frequency samples. Implicitly this call is despatched to the correspnding calls of the ProgressWriter. If you need to have a custom logic for retrieving current status, please consider implementing your own ProgressWriter or using Function.train() method. Please also take into account, that the progress writer should be specified on the trainer not on the training session.
+Progress tracking
+In order to report progress, the training session uses Trainer.summarize_training_progress after each progress_frequency samples (rounded on the border of minibatches). Implicitly this call is despatched to the correspnding calls of the ProgressWriter, which has its own set of parameters (i.e. freq can be used to specify how often to print loss value). ProgressWriter should be specified during trainer creation.
+If you need to have a custom logic for retrieving current status, please consider implementing your own ProgressWriter or using Function.train() method.
 
-Checkpointing configuraiton specifies how often to perform a checkpoint. When given, the training session takes care of saving/restoring the state for the trainer/learners/minibatch source and propogate this information among distributed workers. If you need to preserve all checkpoints that were taken during training, please specify set preserveAll to true.
+Checkpoint configuraiton specifies how often to perform a checkpoint. When given, the training session takes care of saving/restoring the state for the trainer/learners/minibatch source and propogating this information among distributed workers. If you need to preserve all checkpoints that were taken during training, please specify set preserveAll to true. The checkpointing frequency is specified in samples.
 
 Cross validation configuration runs the cross validation with specified frequency and report average error and the number of samples used for cross validation. The user can also provide a cross validation callback, that will be called with the specified frequency, it is up to the user to perform cross validation in this case. If the callback returns false the training will be stopped, this can be used for the early stopping.
 
