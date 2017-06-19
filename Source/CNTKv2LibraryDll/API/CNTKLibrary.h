@@ -5958,7 +5958,7 @@ namespace CNTK
         ///
         /// Gets stream descriptions for all streams this deserializer exposes.
         ///
-        virtual std::vector<StreamInformation> GetStreamDescriptions() const = 0;
+        virtual std::vector<StreamInformation> GetStreamDescriptions() = 0;
 
         ///
         /// Gets chunk descriptions this deserializer exposes.
